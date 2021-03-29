@@ -3,10 +3,7 @@ version = 0.1
 [default.deploy]
 [default.deploy.parameters]
 stack_name = "S3GetPathFiles"
-s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-exv839y4eua5"
-s3_prefix = "S3GetPathFiles"
 region = "us-east-1"
-profile = "prd"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "Bucket=\"example-bucket-2021\" BucketTarget=\"example-bucket-2021\""
