@@ -1,4 +1,4 @@
-#Python 3.8
+# Python 3.8
 # Lambda responsible for reading data from a given informed path and copying to another destination bucket
 # Search_Word is the path that will be used to search the files
 
@@ -10,6 +10,8 @@ s3_write = boto3.resource('s3')
 
 bucket = os.getenv('Bucket')
 bucket_target = os.getenv('BucketTarget')
+
+#Input your path
 search_word = 'path2'
 
 def search_copy_files(bucket, bucket_target, search_word):
