@@ -11,3 +11,6 @@ Run:
 sam build
 sam deploy --guided
 ```
+
+### Author
+* Mateus Silvestre da Silva
