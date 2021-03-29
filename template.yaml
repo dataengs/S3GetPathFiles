@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Process of copying files using Key search in s3
+
+Parameters:
+  Bucket:
+    Description: Bucket Name Origin
+    Type: String
+  BucketTarget:
+    Description: Destination Bucket Name
+    Type: String
+
+Resources:
+  # Lambda Role
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+  
+  # Lambda Policy
+  LambdaPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - ec2:CreateNetworkInterface
+              - ec2:DescribeNetworkInterfaces
+              - ec2:DeleteNetworkInterface
+            Resource: 
+              - '*'
+          - Effect: Allow
+            Action:
+              - kms:Encrypt
+              - kms:Decrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:DescribeKey
+            Resource: arn:aws:kms:*
+          - Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:GetObject
+              - s3:ListBucket
+            Resource:
+              - !Sub arn:aws:s3:::${Bucket}
+              - !Sub arn:aws:s3:::${Bucket}/*
+              - !Sub arn:aws:s3:::${BucketTarget}
+              - !Sub arn:aws:s3:::${BucketTarget}/*
+      Roles:
+        - !Ref LambdaRole
+
+  # Lambda responsible for reading data from a given informed path and copying to another destination bucket
+  LambdaGetPathFiles:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: LambdaFunction/
+      Role: !Sub ${LambdaRole.Arn}
+      Runtime: python3.8
+      MemorySize: 128
+      Timeout: 180
+      Environment:
+        Variables:
+          Bucket: !Ref Bucket
+          BucketTarget: !Ref BucketTarget
+    DependsOn: LambdaRole
